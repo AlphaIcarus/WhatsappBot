@@ -34,20 +34,11 @@ class TestKnownPositiveFlow(unittest.TestCase):
     We have three user cases where this happens:
 
         - Newsletter confirmation.
-        - Giving email confirmation
-        - Valid email given
+        - Giving email confirmation.
+        - Valid email given.
 
-    We are going to test every user case separatedly, and then all together, in specific order of flow.
+    Every one of them is dependent from the one before (except the first one), and because of that we're goint to test them all together.
     '''
-
-    def test_newsletter_confirmation(self):
-        pass
-
-    def test_giving_email_confirmation(self):
-        pass
-
-    def test_valid_email_given(self):
-        pass
 
     def test_full_newsletter(self):
         pass
@@ -58,7 +49,7 @@ class TestKnownNegativeFlow(unittest.TestCase):
     '''
     This class defines the testing on the user cases where the outputs are unexpected but negative.
     In other words, the testing where the user inputs are correct but doesn't want to interact with the system,
-    so he rejects every single thing the system offers
+    so he rejects every single thing the system offers.
 
     We have INSERT_NUMBER_OF_CASES user cases where this happens:
 

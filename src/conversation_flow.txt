@@ -1,0 +1,30 @@
+Looking at the code, we see that every interaction with the bot has three possible inputs:
+
+    - An expected affirmative input, where the answer given by the user is suitable and sets the system to the next step.
+    One example of this kind would be to give a correct email when the bot asks you to specify your email.
+
+    - An expected negative input, where the answer given by the suer is suitable but stops the flow of the conversation, and returns to the start.
+    One example of this kind would be to reject the petition, given by the bot, of subscribing to the newsletter
+
+    - A non expected input, where the answer given by the user is not suitable, or does not match with the possible expected answers.
+    One example of this kind would be to answer a non deterministic sentence (neither yes nor no) when the newsletter is offered.
+
+By that criteria, we now can approach some default conversations with the bot. We assume that the initial state is when the newsletter subscription is offered:
+
+    - Conversations with expected affirmative input: There's only one conversation flow where this happens, and it's
+
+        · confirm newsletter -> confirm giving email -> valid email given, and thus email stored and subscribed to newsletter -> end
+
+    - Conversations with expected negative input: There are 3 conversation flows where this happens:
+
+        · reject newsletter -> end
+        · confirm newsletter -> reject giving email -> end
+        · confirm newsletter -> confirm gibing email -> give wrong email -> end
+
+    - Conversations with non expected input: there are 2 possible conversation flows where this happens (In fact there are 3, but we assume that inserting a 
+        wrong email is a negative expected input, and not a non expected input)
+
+        · 
+
+After thinking about the execution flow, it is possible for the user to not introduce any input. If that happens, the bot must return to the initial state,
+when in a certain moment of time it offers the newsletter subscription to the user, once again.
