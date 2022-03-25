@@ -28,3 +28,5 @@ By that criteria, we now can approach some default conversations with the bot. W
 
 After thinking about the execution flow, it is possible for the user to not introduce any input. If that happens, the bot must return to the initial state,
 when in a certain moment of time it offers the newsletter subscription to the user, once again.
+
+Also, I do not mind about the "asking_for_card" conversation flow because it returns an automatic hangout. There's no different output depending on different input.
