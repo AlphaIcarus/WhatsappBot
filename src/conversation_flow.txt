@@ -19,7 +19,7 @@ By that criteria, we now can approach some default conversations with the bot. W
 
         · reject newsletter -> end
         · confirm newsletter -> reject giving email -> end
-        · confirm newsletter -> confirm gibing email -> give wrong email -> end
+        · confirm newsletter -> confirm giving email -> give wrong email -> end
 
     - Conversations with non expected input: there are 2 possible conversation flows where this happens (In fact there are 3, but we assume that inserting a 
         wrong email is a negative expected input, and not a non expected input)
@@ -27,7 +27,7 @@ By that criteria, we now can approach some default conversations with the bot. W
         · no answer or wrong answer to asking for newsletter-> end?*
         - confirm newsletter -> no confirmation or non deterministic answer to asking for email -> end?*
         
-        *We see that, before the experience, we do not know the results before executing this conversation flow (depends entirely on the implementation).
+        *We see that, before the experience, we do not know the results before executing this conversation flow (depends entirely on implementation decisions).
 
 After thinking about the execution flow, it is possible for the user to not introduce any input. If that happens, the bot must return to the initial state,
 when in a certain moment of time it offers the newsletter subscription to the user, once again.
