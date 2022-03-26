@@ -20,11 +20,24 @@ COSAS QUE FALTAN POR HACER:
 
 # Modules and frameworks
 
+from typing import Any, Dict
 import unittest
+from unittest import mock
 
 # Classes from local file system
 
 from bot import WhatsappBot
+#from classifier import Classifier
+#from api import BooklineAPI
+
+''' 
+Every output is fo the form:
+
+    {'answer': {'id': 0, 'message': 'Great! Please, let me know your e-mail'}, 'action': 'continue'}
+
+    Where answer -> Dict, id -> int, message -> str, action -> string
+
+'''
 
 class TestKnownPositiveFlow(unittest.TestCase):
 
@@ -36,12 +49,26 @@ class TestKnownPositiveFlow(unittest.TestCase):
 
     # confirm newsletter -> confirm giving email -> valid email given, 
     # and thus email stored and subscribed to newsletter -> end
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
     def test_full_newsletter(self):
 
-        bot = WhatsappBot()
+        bot = WhatsappBot('en')
+        response = None
 
+        #Flux of the program
+        response = bot.message("Yes, I would like to receive notifications", "newsletter")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], 'Great! Please, let me know your e-mail')
+        self.assertEqual(response["action"], 'continue')
+
+        with mock.patch('classifier.Classifier.extract_intent', return_value='other'):
+            response = bot.message("abc@email.com", "newsletter")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
+        self.assertEqual(response["action"], 'hangout')
         
-
         pass
 
 
@@ -137,11 +164,34 @@ if __name__ == '__main__':
 
 # FULL TESTING
 
-def main():
+'''
+Notes:
 
-    my_bot = WhatsappBot(language='en')
+    - El decorador mock a efectos prácticos es como un atributo que le pasas por parámetro, así que necesitas definirle una
+    variable asociada a cada decorador
+'''
 
-    my_bot.message("Yes, I would like to receive notifications", "newsletter")
+class Testing(unittest.TestCase):
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value=True)
+    def main(self, mock_check_output_1, mock_check_output_2):
+
+        my_bot = WhatsappBot()
+
+        #Flux of the program
+
+        response = my_bot.message("Yes, I would like to receive notifications", "newsletter")  # bot status changes to expectingEmail
+        print(str(response['answer']['id']) + ', ' + str(response['answer']['message']) + ', ' + str(response['action']))
+
+        with mock.patch('classifier.Classifier.extract_intent', return_value='other'): 
+            response = my_bot.message("abc@email.com", "newsletter")  # valid email, bot inserts email and sends hangup
+        print(str(response['answer']['id']) + ', ' + str(response['answer']['message']) + ', ' + str(response['action']))
+
+        pass
 
 
-main()
+# Execution of the testing program
+
+testing = Testing()
+testing.main()

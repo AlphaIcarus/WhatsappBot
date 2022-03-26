@@ -20,7 +20,7 @@ class WhatsappBot:
         self.classifier = Classifier(self.language)
 
     def _validate_email(self, email: str) -> Match:
-        """Return a regex email Match."""
+        """Return a regex email Match."""        
         return re.match(r"[^@]+@[^@]+\.[^@]+", email)
 
     def _get_intent(self, query: str) -> str:
