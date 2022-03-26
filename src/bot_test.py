@@ -24,6 +24,8 @@ import unittest
 
 # Classes from local file system
 
+from bot import WhatsappBot
+
 class TestKnownPositiveFlow(unittest.TestCase):
 
     '''
@@ -32,7 +34,14 @@ class TestKnownPositiveFlow(unittest.TestCase):
     and gives confirmation every time something is demanded.
     '''
 
+    # confirm newsletter -> confirm giving email -> valid email given, 
+    # and thus email stored and subscribed to newsletter -> end
     def test_full_newsletter(self):
+
+        bot = WhatsappBot()
+
+        
+
         pass
 
 
@@ -45,17 +54,25 @@ class TestKnownNegativeFlow(unittest.TestCase):
     '''
 
     def test_reject_newsletter(self):
+
+        bot = WhatsappBot()
         pass
 
     def test_reject_giving_email(self):
+
+        bot = WhatsappBot()
         pass
 
     def test_give_wrong_email(self):
+
+        bot = WhatsappBot()
         pass
 
     ''' We put here the test for the ask_for_card motive '''
 
     def test_ask_for_card(self):
+
+        bot = WhatsappBot()
         pass
 
 class TestUnknownFlow(unittest.TestCase):
@@ -67,7 +84,64 @@ class TestUnknownFlow(unittest.TestCase):
     '''
 
     def test_no_expected_answer_newsletter(self):
+
+        bot = WhatsappBot()
         pass
 
     def test_no_expected_answer_email(self):
+
+        bot = WhatsappBot()
         pass
+
+
+''' 
+Building test flow function. 
+
+It returns a variable describing the workflow of the unittest execution
+'''
+
+def suite():
+
+    #Creation of sequential tests
+    suite = unittest.TestSuite()
+
+    #Addition of test added in order
+    #suite.addTest(Name_Of_Class('name_of_method'))
+
+    ''' Known positive flow tests '''
+    suite.addTest(TestKnownPositiveFlow('test_full_newsletter'))
+
+    ''' Known negative flow tests '''
+    suite.addTest(TestKnownNegativeFlow('test_reject_newsletter'))
+    suite.addTest(TestKnownNegativeFlow('test_reject_giving_email'))
+    suite.addTest(TestKnownNegativeFlow('test_give_wrong_email'))
+    suite.addTest(TestKnownNegativeFlow('test_ask_for_card'))
+
+    ''' Unknown flow tests '''
+    suite.addTest(TestUnknownFlow('test_no_expected_answer_newsletter'))
+    suite.addTest(TestUnknownFlow('test_no_expected_answer_email'))
+
+    #Return of test flow variable
+    return suite
+
+
+''' Main function - Calling of Unittest '''
+
+'''
+if __name__ == '__main__':
+
+    runner = unittest.TextTestRunner()
+    runner.run(suite())
+
+'''
+
+# FULL TESTING
+
+def main():
+
+    my_bot = WhatsappBot(language='en')
+
+    my_bot.message("Yes, I would like to receive notifications", "newsletter")
+
+
+main()
