@@ -61,13 +61,13 @@ class TestKnownPositiveFlow(unittest.TestCase):
         response = bot.message("Yes, I would like to receive notifications", "newsletter")
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], 'Great! Please, let me know your e-mail')
-        self.assertEqual(response["action"], 'continue')
+        self.assertEqual(response["action"],'continue')
 
         with mock.patch('classifier.Classifier.extract_intent', return_value='other'):
             response = bot.message("abc@email.com", "newsletter")
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
-        self.assertEqual(response["action"], 'hangout')
+        self.assertEqual(response["action"],'continue')
         
         pass
 
@@ -84,7 +84,7 @@ class TestKnownPositiveFlow(unittest.TestCase):
         response = bot.message("validemail@gmail.com", "ask_for_email")
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
-        self.assertEqual(response["action"], 'hangup')
+        self.assertEqual(response["action"],'continue')
 
 
 class TestKnownNegativeFlow(unittest.TestCase):
@@ -107,7 +107,7 @@ class TestKnownNegativeFlow(unittest.TestCase):
         response = bot.message('I do not want to subscribe to the newsletter', 'newsletter')
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], 'Okay, I hope you enjoy the experience at the restaurant')
-        self.assertEqual(response["action"], 'hangout')
+        self.assertEqual(response["action"],'hangup')
 
         pass
 
@@ -129,7 +129,7 @@ class TestKnownNegativeFlow(unittest.TestCase):
             response = bot.message("I'm not a valid email", "newsletter")
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
-        self.assertEqual(response["action"], 'hangup')
+        self.assertEqual(response["action"],'continue')
 
         pass
 
@@ -162,7 +162,7 @@ class TestKnownNegativeFlow(unittest.TestCase):
         response = bot.message("validemail@gmail.com", "ask_for_email")
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
-        self.assertEqual(response["action"], 'hangup')
+        self.assertEqual(response["action"],'continue')
 
         response = bot.message("I'm not a valid email", "ask_for_email")
         self.assertEqual(response["answer"]["id"], 0)
@@ -205,8 +205,8 @@ class TestUnknownFlow(unittest.TestCase):
 
         response = bot.message("I neither confirm nor reject my newsletter subscription", "newsletter")
         self.assertEqual(response["answer"]["id"], 0)
-        self.assertEqual(response["answer"]["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
-        self.assertEqual(response["action"], 'hangup')
+        self.assertEqual(response["answer"]["message"], "Please, let me know if you agree or not")
+        self.assertEqual(response["action"],'continue')
 
         pass
 
@@ -219,15 +219,16 @@ class TestUnknownFlow(unittest.TestCase):
         bot = WhatsappBot('en')
 
         #Flux of the program
-        response = bot.message("Yes, I would like to receive notifications", "newsletter")
+        response = bot.message("Yes, I would like to receive notifications","newsletter")
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], 'Great! Please, let me know your e-mail')
         self.assertEqual(response["action"], 'continue')
 
-        response = bot.message("I do not insert a valid email format","newsletter")
+        with mock.patch('classifier.Classifier.extract_intent', return_value='non_deterministic_response'):
+            response = bot.message("I do not insert a valid email format","newsletter")
         self.assertEqual(response["answer"]["id"], 0)
         self.assertEqual(response["answer"]["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
-        self.assertEqual(response["action"], 'hangup')
+        self.assertEqual(response["action"],'continue')
 
         pass
 

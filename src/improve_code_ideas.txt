@@ -1,3 +1,5 @@
 Existen diversos problemas con el código del bot relacionados con su implementación y con su estructura y conceptualización:
 
+    # Cuando envias el correo y es válido, la siguiente acción es "continue", lo que mucho sentido no tiene
+
     1) 
