@@ -13,8 +13,9 @@ COSAS QUE FALTAN POR HACER:
         * TestKnownNegativeFlow
         * TestUknownFlow
     - Comentarios de la clase:
-        * TestKnownNegativeFlow
-        * TestUnknownFlow
+
+    - Resulta que el flujo de las conversaciones no era como yo creía, así que falta poner
+      métodos para el flujo de conversación de tipo ask_for_email
 
 '''
 
@@ -47,8 +48,7 @@ class TestKnownPositiveFlow(unittest.TestCase):
     and gives confirmation every time something is demanded.
     '''
 
-    # confirm newsletter -> confirm giving email -> valid email given, 
-    # and thus email stored and subscribed to newsletter -> end
+    # confirm newsletter -> valid email given, and thus email stored and subscribed to newsletter -> end
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
     @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
@@ -80,26 +80,62 @@ class TestKnownNegativeFlow(unittest.TestCase):
     so he rejects something the system offers.
     '''
 
+    # reject newsletter -> end
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='reject')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
     def test_reject_newsletter(self):
 
-        bot = WhatsappBot()
+        bot = WhatsappBot('en')
+
+        #Flux of the program
+        response = bot.message('I do not want to subscribe to the newsletter', 'newsletter')
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], 'Okay, I hope you enjoy the experience at the restaurant')
+        self.assertEqual(response["action"], 'hangout')
+
         pass
 
-    def test_reject_giving_email(self):
+    # confirm newsletter -> give wrong email (format) -> end
 
-        bot = WhatsappBot()
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
+    def test_wrong_email(self):
+
+        bot = WhatsappBot('en')
+
+        #Flux of the program
+        response = bot.message("Yes, I would like to receive notifications", "newsletter")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], 'Great! Please, let me know your e-mail')
+        self.assertEqual(response["action"], 'continue')
+
+        with mock.patch('classifier.Classifier.extract_intent', return_value='other'):
+            response = bot.message("I'm not a valid email", "newsletter")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
+        self.assertEqual(response["action"], 'hangup')
+
         pass
 
-    def test_give_wrong_email(self):
-
-        bot = WhatsappBot()
-        pass
+    # confirm newsletter -> confirm giving email -> give wrong email -> end
 
     ''' We put here the test for the ask_for_card motive '''
 
+    # give card -> end 
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
     def test_ask_for_card(self):
 
-        bot = WhatsappBot()
+        bot = WhatsappBot('en')
+
+        #Flux of the program
+        response = bot.message("I want to give my card", "ask_for_card")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
+        self.assertEqual(response["action"], 'hangup')
+
         pass
 
 class TestUnknownFlow(unittest.TestCase):
@@ -110,16 +146,41 @@ class TestUnknownFlow(unittest.TestCase):
     and the user gives an answer out of these possible (or doesn't give an answer at all) 
     '''
 
+    # wrong answer to asking for newsletter-> end?*
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='non_deterministic_response')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
     def test_no_expected_answer_newsletter(self):
 
-        bot = WhatsappBot()
+        bot = WhatsappBot('en')
+
+        response = bot.message("I neither confirm nor reject my newsletter subscription", "newsletter")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
+        self.assertEqual(response["action"], 'hangup')
+
         pass
 
-    def test_no_expected_answer_email(self):
+    # confirm newsletter -> wrong email format (random input) -> end?*
 
-        bot = WhatsappBot()
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
+    def test_no_expected_answer_email_request(self):
+
+        bot = WhatsappBot('en')
+
+        #Flux of the program
+        response = bot.message("Yes, I would like to receive notifications", "newsletter")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], 'Great! Please, let me know your e-mail')
+        self.assertEqual(response["action"], 'continue')
+
+        response = bot.message("I do not insert a valid email format","newsletter")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
+        self.assertEqual(response["action"], 'hangup')
+
         pass
-
 
 ''' 
 Building test flow function. 
@@ -140,13 +201,12 @@ def suite():
 
     ''' Known negative flow tests '''
     suite.addTest(TestKnownNegativeFlow('test_reject_newsletter'))
-    suite.addTest(TestKnownNegativeFlow('test_reject_giving_email'))
-    suite.addTest(TestKnownNegativeFlow('test_give_wrong_email'))
+    suite.addTest(TestKnownNegativeFlow('test_wrong_email'))
     suite.addTest(TestKnownNegativeFlow('test_ask_for_card'))
 
     ''' Unknown flow tests '''
     suite.addTest(TestUnknownFlow('test_no_expected_answer_newsletter'))
-    suite.addTest(TestUnknownFlow('test_no_expected_answer_email'))
+    suite.addTest(TestUnknownFlow('test_no_expected_answer_email_request'))
 
     #Return of test flow variable
     return suite
@@ -154,23 +214,33 @@ def suite():
 
 ''' Main function - Calling of Unittest '''
 
-'''
+
 if __name__ == '__main__':
 
     runner = unittest.TextTestRunner()
     runner.run(suite())
 
-'''
+
+
+
+
+
+
+
+
+
+
 
 # FULL TESTING
 
 '''
-Notes:
+Notas:
 
     - El decorador mock a efectos prácticos es como un atributo que le pasas por parámetro, así que necesitas definirle una
     variable asociada a cada decorador
 '''
 
+'''
 class Testing(unittest.TestCase):
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
@@ -195,3 +265,5 @@ class Testing(unittest.TestCase):
 
 testing = Testing()
 testing.main()
+
+'''

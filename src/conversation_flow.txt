@@ -13,19 +13,18 @@ By that criteria, we now can approach some default conversations with the bot. W
 
     - Conversations with expected affirmative input: There's only one conversation flow where this happens, and it's
 
-        · confirm newsletter -> confirm giving email -> valid email given, and thus email stored and subscribed to newsletter -> end
+        · confirm newsletter -> valid email given, and thus email stored and subscribed to newsletter -> end
 
-    - Conversations with expected negative input: There are 3 conversation flows where this happens:
+    - Conversations with expected negative input: There are 2 conversation flows where this happens:
 
         · reject newsletter -> end
-        · confirm newsletter -> reject giving email -> end
-        · confirm newsletter -> confirm giving email -> give wrong email -> end
+        · confirm newsletter -> give wrong email -> end
 
     - Conversations with non expected input: there are 2 possible conversation flows where this happens (In fact there are 3, but we assume that inserting a 
         wrong email is a negative expected input, and not a non expected input)
 
-        · no answer or wrong answer to asking for newsletter-> end?*
-        - confirm newsletter -> no confirmation or non deterministic answer to asking for email -> end?*
+        · wrong answer to asking for newsletter-> end?*
+        - confirm newsletter -> wrong email format (random input) -> end?*
         
         *We see that, before the experience, we do not know the results before executing this conversation flow (depends entirely on implementation decisions).
 
