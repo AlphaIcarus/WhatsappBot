@@ -1,5 +1,25 @@
 Existen diversos problemas con el código del bot relacionados con su implementación y con su estructura y conceptualización:
 
-    # Cuando envias el correo y es válido, la siguiente acción es "continue", lo que mucho sentido no tiene
+    1) Cuando un usuario introduce un email incorrecto, el bot no devuelve información relativa a por qué ha surgido este error,
+    o alguna instrucción de cómo debe ser el input cuando el sistema pide un correo.
 
-    1) 
+    2) El sistema tiene un flujo de estado interno repetitivo, donde diferentes interacciones a diferentes estados del bot 
+    conducen al mismo output o output similares. 
+    
+    Por ejemplo, en el motivo newsletter_flow, cuando se empieza la interacción con el bot, podemos hacer reject a dar el correo,
+    de la misma manera que podemos hacer reject en el momento que el bot espera un email, y obtenemos el mismo resultado.
+
+    Por ende, encontramos que muchas salidas son repetidas en diferentes estados, por lo que hay código repetido. Esto también se ve
+    reflejado en la eficiencia y el tratamiento del código. 
+
+Cómo mejorar el bot? 
+    
+    - Estos problemas se podrían mejorar elaborando un grafo de estados con las posibles situaciones que produce el bot, estimar las mínimas
+    variables que son necesarias para mantener el estado interno del bot en llos posibles estados del flujo de conversación, y para cada método
+    hacer las comprobaciones de las variables de tal forma que cada fragmento de código interno, tras hacer cada una de las comprobaciones necesarias
+    y ver en qué estado de la máquina nos encontramos, dado un input de usuario determinado, tenga un output único que no puede ser encontrado
+    con ningún otro posible resultado de la evaluación del estado interno; o, por lo menos, con el mínimo de repeticiones.
+
+    - El bot debería dar más información relativa a aquellos casos donde la salida es negativa, donde no se ha conseguido llegar al objetivo deseado.
+    Esta modificación posiblemente implique añadir variables internas, más casos que evaluar y diversos métodos que implementar de otras clases
+    complementarias que utilize el bot, por lo que aumenta la complejidad de la clase.
