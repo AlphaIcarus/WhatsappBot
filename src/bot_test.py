@@ -18,12 +18,11 @@ from bot import WhatsappBot
 #from api import BooklineAPI
 
 ''' 
-Every output is of the form:
+Every output has the form:
 
     {'answer': {'id': 0, 'message': 'Great! Please, let me know your e-mail'}, 'action': 'continue'}
 
     Where answer -> Dict, id -> int, message -> str, action -> string
-
 '''
 
 class TestKnownPositiveFlow(unittest.TestCase):
