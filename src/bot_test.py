@@ -52,7 +52,7 @@ class TestKnownPositiveFlow(unittest.TestCase):
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
     @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
-    def test_full_newsletter(self):
+    def test_full_newsletter(self, mock1, mock2):
 
         bot = WhatsappBot('en')
         response = None
@@ -71,6 +71,21 @@ class TestKnownPositiveFlow(unittest.TestCase):
         
         pass
 
+    # give email when ask_for_email -> valid email given and stored -> end
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
+    def test_full_email(self, mock1, mock2):
+
+        bot = WhatsappBot('en')
+        response = None
+
+        #Flux of the program
+        response = bot.message("validemail@gmail.com", "ask_for_email")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
+        self.assertEqual(response["action"], 'hangup')
+
 
 class TestKnownNegativeFlow(unittest.TestCase):
 
@@ -84,7 +99,7 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='reject')
     @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
-    def test_reject_newsletter(self):
+    def test_reject_newsletter(self,mock1, mock2):
 
         bot = WhatsappBot('en')
 
@@ -100,7 +115,7 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
     @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
-    def test_wrong_email(self):
+    def test_wrong_email(self, mock1, mock2):
 
         bot = WhatsappBot('en')
 
@@ -118,7 +133,41 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
         pass
 
-    # confirm newsletter -> confirm giving email -> give wrong email -> end
+    # give wrong emil when ask_for_email -> wrong email given, try again -> start again
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
+    def test_wrong_email_ask_for_email(self, mock1, mock2):
+
+        bot = WhatsappBot('en')
+
+        #Flux of the program
+        response = bot.message("I'm not a valid email", "ask_for_email")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
+        self.assertEqual(response["action"], 'continue')
+
+        # Here we would have to insert the email making sure the format is correct -> recurssive definition
+        pass
+
+    # give valid email when ask_for_email -> valid email given and stored -> give email once again -> error -> end 
+
+    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
+    @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
+    def test_valid_email_then_wrong_email(self, mock1, mock2):
+
+        bot = WhatsappBot('en')
+
+        #Flux of the program
+        response = bot.message("validemail@gmail.com", "ask_for_email")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
+        self.assertEqual(response["action"], 'hangup')
+
+        response = bot.message("I'm not a valid email", "ask_for_email")
+        self.assertEqual(response["id"], 0)
+        self.assertEqual(response["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
+        self.assertEqual(response["action"], 'hangup')
 
     ''' We put here the test for the ask_for_card motive '''
 
@@ -126,7 +175,7 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
     @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
-    def test_ask_for_card(self):
+    def test_ask_for_card(self, mock1, mock2):
 
         bot = WhatsappBot('en')
 
@@ -150,7 +199,7 @@ class TestUnknownFlow(unittest.TestCase):
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='non_deterministic_response')
     @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
-    def test_no_expected_answer_newsletter(self):
+    def test_no_expected_answer_newsletter(self, mock1, mock2):
 
         bot = WhatsappBot('en')
 
@@ -165,7 +214,7 @@ class TestUnknownFlow(unittest.TestCase):
 
     @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
     @mock.patch('api.BooklineAPI.insert_customer_email', return_value='okey')
-    def test_no_expected_answer_email_request(self):
+    def test_no_expected_answer_email_request(self, mock1, mock2):
 
         bot = WhatsappBot('en')
 
@@ -198,11 +247,16 @@ def suite():
 
     ''' Known positive flow tests '''
     suite.addTest(TestKnownPositiveFlow('test_full_newsletter'))
+    suite.addTest(TestKnownPositiveFlow('test_full_email'))
 
     ''' Known negative flow tests '''
     suite.addTest(TestKnownNegativeFlow('test_reject_newsletter'))
     suite.addTest(TestKnownNegativeFlow('test_wrong_email'))
     suite.addTest(TestKnownNegativeFlow('test_ask_for_card'))
+    suite.addTest(TestKnownNegativeFlow('test_valid_email_then_wrong_email'))
+    suite.addTest(TestKnownNegativeFlow('test_wrong_email_ask_for_email'))
+
+
 
     ''' Unknown flow tests '''
     suite.addTest(TestUnknownFlow('test_no_expected_answer_newsletter'))
@@ -211,9 +265,7 @@ def suite():
     #Return of test flow variable
     return suite
 
-
 ''' Main function - Calling of Unittest '''
-
 
 if __name__ == '__main__':
 

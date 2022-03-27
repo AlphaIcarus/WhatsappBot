@@ -15,10 +15,15 @@ By that criteria, we now can approach some default conversations with the bot. W
 
         · confirm newsletter -> valid email given, and thus email stored and subscribed to newsletter -> end
 
+        · give email when ask_for_email -> valid email given and stored -> end
+
     - Conversations with expected negative input: There are 2 conversation flows where this happens:
 
         · reject newsletter -> end
         · confirm newsletter -> give wrong email -> end
+
+        · give wrong emil when ask_for_email -> wrong email given, try again -> start again
+        - give valid email when ask_for_email -> valid email given and stored -> give email once again -> error -> end 
 
     - Conversations with non expected input: there are 2 possible conversation flows where this happens (In fact there are 3, but we assume that inserting a 
         wrong email is a negative expected input, and not a non expected input)
