@@ -59,14 +59,14 @@ class TestKnownPositiveFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message("Yes, I would like to receive notifications", "newsletter")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], 'Great! Please, let me know your e-mail')
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], 'Great! Please, let me know your e-mail')
         self.assertEqual(response["action"], 'continue')
 
         with mock.patch('classifier.Classifier.extract_intent', return_value='other'):
             response = bot.message("abc@email.com", "newsletter")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
         self.assertEqual(response["action"], 'hangout')
         
         pass
@@ -82,8 +82,8 @@ class TestKnownPositiveFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message("validemail@gmail.com", "ask_for_email")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
         self.assertEqual(response["action"], 'hangup')
 
 
@@ -105,8 +105,8 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message('I do not want to subscribe to the newsletter', 'newsletter')
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], 'Okay, I hope you enjoy the experience at the restaurant')
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], 'Okay, I hope you enjoy the experience at the restaurant')
         self.assertEqual(response["action"], 'hangout')
 
         pass
@@ -121,14 +121,14 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message("Yes, I would like to receive notifications", "newsletter")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], 'Great! Please, let me know your e-mail')
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], 'Great! Please, let me know your e-mail')
         self.assertEqual(response["action"], 'continue')
 
         with mock.patch('classifier.Classifier.extract_intent', return_value='other'):
             response = bot.message("I'm not a valid email", "newsletter")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
         self.assertEqual(response["action"], 'hangup')
 
         pass
@@ -143,8 +143,8 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message("I'm not a valid email", "ask_for_email")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
         self.assertEqual(response["action"], 'continue')
 
         # Here we would have to insert the email making sure the format is correct -> recurssive definition
@@ -160,13 +160,13 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message("validemail@gmail.com", "ask_for_email")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "Perfect, we've stored your e-mail! Enjoy the experience at the restaurant")
         self.assertEqual(response["action"], 'hangup')
 
         response = bot.message("I'm not a valid email", "ask_for_email")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
         self.assertEqual(response["action"], 'hangup')
 
     ''' We put here the test for the ask_for_card motive '''
@@ -181,8 +181,8 @@ class TestKnownNegativeFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message("I want to give my card", "ask_for_card")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
         self.assertEqual(response["action"], 'hangup')
 
         pass
@@ -204,8 +204,8 @@ class TestUnknownFlow(unittest.TestCase):
         bot = WhatsappBot('en')
 
         response = bot.message("I neither confirm nor reject my newsletter subscription", "newsletter")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "Thanks for reaching out. I can't help you with anything else yet but if you want to make a reservation you can call the restaurant again")
         self.assertEqual(response["action"], 'hangup')
 
         pass
@@ -220,13 +220,13 @@ class TestUnknownFlow(unittest.TestCase):
 
         #Flux of the program
         response = bot.message("Yes, I would like to receive notifications", "newsletter")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], 'Great! Please, let me know your e-mail')
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], 'Great! Please, let me know your e-mail')
         self.assertEqual(response["action"], 'continue')
 
         response = bot.message("I do not insert a valid email format","newsletter")
-        self.assertEqual(response["id"], 0)
-        self.assertEqual(response["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
+        self.assertEqual(response["answer"]["id"], 0)
+        self.assertEqual(response["answer"]["message"], "It seems that this e-mail is not valid. Please make sure it's correct")
         self.assertEqual(response["action"], 'hangup')
 
         pass
@@ -255,8 +255,6 @@ def suite():
     suite.addTest(TestKnownNegativeFlow('test_ask_for_card'))
     suite.addTest(TestKnownNegativeFlow('test_valid_email_then_wrong_email'))
     suite.addTest(TestKnownNegativeFlow('test_wrong_email_ask_for_email'))
-
-
 
     ''' Unknown flow tests '''
     suite.addTest(TestUnknownFlow('test_no_expected_answer_newsletter'))

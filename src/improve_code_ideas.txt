@@ -1,0 +1,3 @@
+Existen diversos problemas con el código del bot relacionados con su implementación y con su estructura y conceptualización:
+
+    1) 
