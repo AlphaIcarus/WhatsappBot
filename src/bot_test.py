@@ -5,20 +5,6 @@ We want to define an important ammount of possible interactions from user to bot
 bot behaves.
 '''
 
-'''
-COSAS QUE FALTAN POR HACER:
-
-    - Implementación de la clase:
-        * TestKnownPositiveFlow
-        * TestKnownNegativeFlow
-        * TestUknownFlow
-    - Comentarios de la clase:
-
-    - Resulta que el flujo de las conversaciones no era como yo creía, así que falta poner
-      métodos para el flujo de conversación de tipo ask_for_email
-
-'''
-
 # Modules and frameworks
 
 from typing import Any, Dict
@@ -32,7 +18,7 @@ from bot import WhatsappBot
 #from api import BooklineAPI
 
 ''' 
-Every output is fo the form:
+Every output is of the form:
 
     {'answer': {'id': 0, 'message': 'Great! Please, let me know your e-mail'}, 'action': 'continue'}
 
@@ -270,51 +256,3 @@ if __name__ == '__main__':
 
     runner = unittest.TextTestRunner()
     runner.run(suite())
-
-
-
-
-
-
-
-
-
-
-
-
-# FULL TESTING
-
-'''
-Notas:
-
-    - El decorador mock a efectos prácticos es como un atributo que le pasas por parámetro, así que necesitas definirle una
-    variable asociada a cada decorador
-'''
-
-'''
-class Testing(unittest.TestCase):
-
-    @mock.patch('classifier.Classifier.extract_intent', return_value='confirm')
-    @mock.patch('api.BooklineAPI.insert_customer_email', return_value=True)
-    def main(self, mock_check_output_1, mock_check_output_2):
-
-        my_bot = WhatsappBot()
-
-        #Flux of the program
-
-        response = my_bot.message("Yes, I would like to receive notifications", "newsletter")  # bot status changes to expectingEmail
-        print(str(response['answer']['id']) + ', ' + str(response['answer']['message']) + ', ' + str(response['action']))
-
-        with mock.patch('classifier.Classifier.extract_intent', return_value='other'): 
-            response = my_bot.message("abc@email.com", "newsletter")  # valid email, bot inserts email and sends hangup
-        print(str(response['answer']['id']) + ', ' + str(response['answer']['message']) + ', ' + str(response['action']))
-
-        pass
-
-
-# Execution of the testing program
-
-testing = Testing()
-testing.main()
-
-'''
